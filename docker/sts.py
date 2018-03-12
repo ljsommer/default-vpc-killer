@@ -3,11 +3,11 @@ from botocore.exceptions import ClientError
 import logger
 
 
-def account_id(inventory):
+def account_id(inventory, profiles):
     log = logger.create_logger()
     region = 'us-west-2'
 
-    for profile, attribute in inventory.items():
+    for profile in profiles:
 
         try:
             session = boto3.Session(
@@ -16,7 +16,9 @@ def account_id(inventory):
             )
 
             account_id = session.client('sts').get_caller_identity()['Account']
-            inventory[profile]['AccountId'] = account_id
+
+            inventory[account_id] = {}
+            inventory[account_id]['ProfileName'] = profile
 
         except ClientError as e:
             if e.response['Error']['Code'] == 'InvalidClientTokenId':

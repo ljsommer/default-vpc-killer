@@ -6,10 +6,12 @@ import logger
 def describe_default_vpcs(inventory, regions):
     log = logger.create_logger()
 
-    for profile in inventory:
+    for account in inventory:
+        inventory[account]['Regions'] = []
+
         for region in regions:
             try:
-                session = boto3.Session(profile_name=profile, region_name=region)
+                session = boto3.Session(profile_name=inventory[account]['ProfileName'], region_name=region)
                 ec2 = session.client('ec2')
 
                 response = ec2.describe_vpcs(
@@ -33,177 +35,412 @@ def describe_default_vpcs(inventory, regions):
                     continue
 
             for vpc in response['Vpcs']:
-                inventory[profile]['Regions'] = []
-
-                region_dict = {'DefaultVpc': vpc['VpcId'], 'ContainsInstances': False, 'Whitelist': False}
-
-                inventory[profile]['Regions'].append({region: region_dict})
+                region_dict = {'DefaultVpc': vpc['VpcId'], 'NetworkInterfacesPresent': False, 'Whitelist': False}
+                inventory[account]['Regions'].append({region: region_dict})
 
 
-def describe_regions(inventory):
+def describe_regions(profiles):
     log = logger.create_logger()
-    profile = next(iter(inventory))
 
-    log.debug("Using profile %s to identify available regions ...", profile)
+    for profile in profiles:
+        log.debug("Using profile %s to identify available regions ...", profile)
 
-    session = boto3.Session(profile_name=profile)
-    ec2 = session.client('ec2')
+        session = boto3.Session(profile_name=profile)
+        ec2 = session.client('ec2')
 
-    try:
-        response = ec2.describe_regions()
+        try:
+            response = ec2.describe_regions()
 
-    except ClientError as e:
-        if e.response['Error']['Code'] == 'InvalidClientTokenId':
-            log.warn("""The keypair associated with profile %s
-                is not currently able to authenticate against AWS EC2.
-                Please investigate or remove and rerun.""", profile)
-        else:
-            log.warn("Unhandled exception occurred: %s", e)
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                log.warn("""The keypair associated with profile %s
+                    is not currently able to authenticate against AWS EC2.
+                    Please investigate or remove and rerun.""", profile)
+            else:
+                log.warn("Unhandled exception occurred: %s", e)
 
-    regions = []
-    for region in response['Regions']:
-        for k, v in region.items():
-            if k == "RegionName":
-                regions.append(v)
+        regions = []
+        for region in response['Regions']:
+            for k, v in region.items():
+                if k == "RegionName":
+                    regions.append(v)
 
     log.debug("Regions identified: %s", regions)
 
     return regions
 
 
-def instances(inventory):
+def network_interfaces(inventory):
     log = logger.create_logger()
 
-    for profile, attribute in inventory.items():
+    for account, attribute in inventory.items():
         for region in attribute['Regions']:
             for key, value in region.items():
                 region_name = key
                 vpc = value['DefaultVpc']
 
-                try:
-                    session = boto3.Session(
-                        profile_name=profile,
-                        region_name=region_name
-                    )
+                if not value['Whitelist']:
 
-                    ec2_client = session.client('ec2')
+                    try:
+                        session = boto3.Session(
+                            profile_name=attribute['ProfileName'],
+                            region_name=region_name
+                        )
 
-                    response = ec2_client.describe_instances(
-                        Filters=[
-                            {
-                                'Name': 'vpc-id',
-                                'Values': [
-                                    vpc,
-                                ]
-                            }
-                        ]
-                    )
+                        ec2_client = session.client('ec2')
 
-                    for k, v in response.items():
-                        if k == 'Reservations':
-                            if not v:
-                                log.debug(
-                                    "Account ID %s associated with keypair name %s: Default VPC %s in region %s has no EC2 instances.",
-                                    attribute['AccountId'], profile, vpc, region_name
-                                )
-                                continue
+                        response = ec2_client.describe_network_interfaces(
+                            Filters=[
+                                {
+                                    'Name': 'vpc-id',
+                                    'Values': [
+                                        vpc,
+                                    ]
+                                }
+                            ]
+                        )
 
-                            else:
-                                log.warn(
-                                    "Account ID %s associated with keypair name %s: Default VPC %s in region %s has EC2 instances. Skipping.",
-                                    attribute['AccountId'], profile, vpc, region_name
-                                )
-
-                                for region in inventory[profile]['Regions']:
-                                    region.update((v, "False") for k, v in region.items() if k == 'InstancesPresent')
-                                continue
-
-                except ClientError as e:
-                    if e.response['Error']['Code'] == 'InvalidClientTokenId':
-                        log.warn(
-                            "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.", profile)
-
-                    else:
-                        log.warn("Unhandled exception occurred: %s", e)
-                        continue
-
-def subnets(inventory):
-    log = logger.create_logger()
-
-    for profile, attribute in inventory.items():
-        for region in attribute['Regions']:
-            for key, value in region.items():
-                region_name = key
-                vpc = value['DefaultVpc']
-
-                try:
-                    session = boto3.Session(
-                        profile_name=profile,
-                        region_name=region_name
-                    )
-
-                    ec2_client = session.client('ec2')
-
-                    response = ec2_client.describe_subnets(
-                        Filters=[
-                            {
-                                'Name': 'vpc-id',
-                                'Values': [
-                                    vpc,
-                                ]
-                            }
-                        ]
-                    )
-
-                    for k, v in response.items():
-                        if not v:
+                        if not response['NetworkInterfaces']:
                             log.debug(
-                                "Account ID %s associated with keypair name %s: Default VPC %s in region %s has no EC2 instances.",
-                                attribute['AccountId'], profile, vpc, region_name
+                                "Account ID %s associated with keypair name %s: No network interfaces present in %s",
+                                account, attribute['ProfileName'], vpc
                             )
-                            continue
 
                         else:
                             log.warn(
-                                "Account ID %s associated with keypair name %s: Default VPC %s in region %s has EC2 instances. Skipping.",
-                                attribute['AccountId'], profile, vpc, region_name
+                                "Account ID %s associated with keypair name %s: Network interfaces found in %s. No action will be taken on this VPC.",
+                                account, attribute['ProfileName'], vpc
                             )
 
-                            for region in inventory[profile]['Regions']:
-                                region.update((v, "False") for k, v in region.items() if k == 'InstancesPresent')
+                            for vpc in inventory[account]['Regions']:
+                                vpc.update((v, "True") for k, v in vpc.items() if k == 'NetworkInterfaces')
                             continue
 
-                except ClientError as e:
-                    if e.response['Error']['Code'] == 'InvalidClientTokenId':
-                        log.warn(
-                            "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.", profile)
+                    except ClientError as e:
+                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                            log.warn(
+                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                profile
+                            )
 
-                    else:
-                        log.warn("Unhandled exception occurred: %s", e)
-                        continue
+                        else:
+                            log.warn("Unhandled exception occurred: %s", e)
+                            continue
 
 
+def subnets(inventory, dry_run):
+    log = logger.create_logger()
+
+    for account, attribute in inventory.items():
+        for region in attribute['Regions']:
+            for key, value in region.items():
+                region_name = key
+                vpc = value['DefaultVpc']
+
+                if not value['NetworkInterfacesPresent'] and not value['Whitelist']:
+
+                    try:
+                        session = boto3.Session(
+                            profile_name=attribute['ProfileName'],
+                            region_name=region_name
+                        )
+
+                        ec2_client = session.client('ec2')
+
+                        response = ec2_client.describe_subnets(
+                            Filters=[
+                                {
+                                    'Name': 'vpc-id',
+                                    'Values': [
+                                        vpc,
+                                    ]
+                                }
+                            ]
+                        )
+
+                        for subnet in response['Subnets']:
+                            subnet_dict = subnet
+                            resource = subnet_dict['SubnetId']
+
+                            log.debug("Attempting to delete %s from %s - dry-run: %s", resource, vpc, dry_run)
+                            response = ec2_client.delete_subnet(
+                                SubnetId=resource,
+                                DryRun=dry_run
+                            )
+
+                    except ClientError as e:
+                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                            log.warn(
+                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                profile
+                            )
+
+                        else:
+                            log.warn("Unhandled exception occurred: %s", e)
+                            continue
 
 
+def security_groups(inventory, dry_run):
+    log = logger.create_logger()
 
-def security_groups(inventory):
-    pass
+    for account, attribute in inventory.items():
+        for region in attribute['Regions']:
+            for key, value in region.items():
+                region_name = key
+                vpc = value['DefaultVpc']
 
-def network_acls(inventory):
-    pass
+                if not value['NetworkInterfacesPresent'] and not value['Whitelist']:
 
-def vpns(inventory):
-    pass
+                    try:
+                        session = boto3.Session(
+                            profile_name=attribute['ProfileName'],
+                            region_name=region_name
+                        )
 
-def internet_gws(inventory):
-    pass
+                        ec2_client = session.client('ec2')
 
-def route_tables(inventory):
-    pass
+                        response = ec2_client.describe_security_groups(
+                            Filters=[
+                                {
+                                    'Name': 'vpc-id',
+                                    'Values': [
+                                        vpc,
+                                    ]
+                                }
+                            ]
+                        )
 
-def network_interfaces(inventory):
-    pass
+                        for security_group in response['SecurityGroups']:
+                            security_group_dict = security_group
+                            resource = security_group_dict['GroupId']
 
-def vpc_peering(inventory):
-    pass
+                            log.debug("Attempting to delete %s from %s - dry-run: %s", resource, vpc, dry_run)
+                            response = ec2_client.delete_security_group(
+                                GroupId=resource,
+                                DryRun=dry_run
+                            )
+
+                    except ClientError as e:
+                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                            log.warn(
+                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                profile
+                            )
+
+                        else:
+                            log.warn("Unhandled exception occurred: %s", e)
+                            continue
+
+
+def network_acls(inventory, dry_run):
+    log = logger.create_logger()
+
+    for account, attribute in inventory.items():
+        for region in attribute['Regions']:
+            for key, value in region.items():
+                region_name = key
+                vpc = value['DefaultVpc']
+
+                if not value['NetworkInterfacesPresent'] and not value['Whitelist']:
+
+                    try:
+                        session = boto3.Session(
+                            profile_name=attribute['ProfileName'],
+                            region_name=region_name
+                        )
+
+                        ec2_client = session.client('ec2')
+
+                        response = ec2_client.describe_network_acls(
+                            Filters=[
+                                {
+                                    'Name': 'vpc-id',
+                                    'Values': [
+                                        vpc,
+                                    ]
+                                }
+                            ]
+                        )
+
+                        for nacl in response['NetworkAcls']:
+                            nacl_dict = nacl
+                            resource = nacl['NetworkAclId']
+
+                            log.debug("Attempting to delete %s from %s - dry-run: %s", resource, vpc, dry_run)
+                            response = ec2_client.delete_network_acl(
+                                NetworkAclId=resource,
+                                DryRun=dry_run
+                            )
+
+                    except ClientError as e:
+                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                            log.warn(
+                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                profile
+                            )
+
+                        else:
+                            log.warn("Unhandled exception occurred: %s", e)
+                            continue
+
+
+def internet_gateways(inventory, dry_run):
+    log = logger.create_logger()
+
+    for account, attribute in inventory.items():
+        for region in attribute['Regions']:
+            for key, value in region.items():
+                region_name = key
+                vpc = value['DefaultVpc']
+
+                if not value['NetworkInterfacesPresent'] and not value['Whitelist']:
+
+                    try:
+                        session = boto3.Session(
+                            profile_name=attribute['ProfileName'],
+                            region_name=region_name
+                        )
+
+                        ec2_client = session.client('ec2')
+
+                        response = ec2_client.describe_internet_gateways(
+                            Filters=[
+                                {
+                                    'Name': 'attachment.vpc-id',
+                                    'Values': [
+                                        vpc,
+                                    ]
+                                }
+                            ]
+                        )
+
+                        for igw in response['InternetGateways']:
+                            igw_dict = igw
+                            resource = igw['InternetGatewayId']
+
+                            response = ec2_client.detach_internet_gateway(
+                                DryRun=dry_run,
+                                InternetGatewayId=resource,
+                                VpcId=vpc
+                            )
+
+                            log.debug("Attempting to delete %s from %s - dry-run: %s", resource, vpc, dry_run)
+                            response = ec2_client.delete_internet_gateway(
+                                InternetGatewayId=resource,
+                                DryRun=dry_run
+                            )
+
+                    except ClientError as e:
+                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                            log.warn(
+                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                profile
+                            )
+
+                        else:
+                            log.warn("Unhandled exception occurred: %s", e)
+                            continue
+
+
+def route_tables(inventory, dry_run):
+    log = logger.create_logger()
+
+    for account, attribute in inventory.items():
+        for region in attribute['Regions']:
+            for key, value in region.items():
+                region_name = key
+                vpc = value['DefaultVpc']
+
+                if not value['NetworkInterfacesPresent'] and not value['Whitelist']:
+
+                    try:
+                        session = boto3.Session(
+                            profile_name=attribute['ProfileName'],
+                            region_name=region_name
+                        )
+
+                        ec2_client = session.client('ec2')
+
+                        response = ec2_client.describe_route_tables(
+                            Filters=[
+                                {
+                                    'Name': 'vpc-id',
+                                    'Values': [
+                                        vpc,
+                                    ]
+                                }
+                            ]
+                        )
+
+                        for route_table in response['RouteTables']:
+                            route_table_dict = route_table
+                            resource = route_table_dict['RouteTableId']
+
+                            log.debug("Attempting to delete %s from %s - dry-run: %s", resource, vpc, dry_run)
+                            response = ec2_client.delete_route_table(
+                                RouteTableId=resource,
+                                DryRun=dry_run
+                            )
+
+                    except ClientError as e:
+                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                            log.warn(
+                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                profile
+                            )
+
+                        else:
+                            log.warn("Unhandled exception occurred: %s", e)
+                            continue
+
+
+def vpc(inventory, dry_run):
+    log = logger.create_logger()
+
+    summary = []
+
+    for account, attribute in inventory.items():
+
+        account_summary = {'AccountId':account}
+        vpcs_removed = []
+
+        for region in attribute['Regions']:
+            for key, value in region.items():
+                region_name = key
+                vpc = value['DefaultVpc']
+
+                if not value['NetworkInterfacesPresent'] and not value['Whitelist']:
+
+                    try:
+                        session = boto3.Session(
+                            profile_name=attribute['ProfileName'],
+                            region_name=region_name
+                        )
+
+                        ec2_client = session.client('ec2')
+
+                        log.debug("Attempting to delete %s - dry-run: %s", vpc, dry_run)
+                        response = ec2_client.delete_vpc(
+                            VpcId=vpc,
+                            DryRun=dry_run
+                        )
+
+                    except ClientError as e:
+                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                            log.warn(
+                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                profile
+                            )
+
+                        else:
+                            log.warn("Unhandled exception occurred: %s", e)
+                            vpcs_removed.append(vpc)
+                            continue
+
+                    vpcs_removed.append(vpc)
+
+        account_summary['VpcsRemoved'] = vpcs_removed
+        summary.append(account_summary)
+
+    log.info("Summary: %s", summary)
 

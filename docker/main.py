@@ -3,6 +3,7 @@
 import ec2
 import local
 import logger
+import os
 import sts
 import whitelist
 
@@ -15,21 +16,34 @@ Development:
 
 def main():
     log = logger.create_logger()
-    log.info("Default VPC killer: Start")
+    dry_run = os.environ['dry_run']
 
-    global account_inventory
+    def str_to_bool(s):
+        if s == 'True':
+             return True
+        elif s == 'False':
+             return False
+
+    dry_run = str_to_bool(dry_run)
+
+    log.info("Default VPC killer: Start")
+    if dry_run:
+        log.info("Dry run flag enabled - no delete operations will occur.")
+
     account_inventory = {}
 
-    local.profiles(account_inventory)
-    regions = ec2.describe_regions(account_inventory)
+    profiles = local.profiles()
+    regions = ec2.describe_regions(profiles)
+
+    # Account inventory assembly begins
+    sts.account_id(account_inventory, profiles)
     ec2.describe_default_vpcs(account_inventory, regions)
-    whitelist.decorate(account_inventory)
+    whitelist.decorate(account_inventory, regions)
 
-    # At this point, we need take no further action if the region is whitelisted
-    #sts.account_id(account_inventory)
-    #ec2.instances(account_inventory)
-    #ec2.subnets(account_inventory)
+    ec2.network_interfaces(account_inventory)
 
-    log.info("Account inventory for debugging: %s", account_inventory)
+    ec2.subnets(account_inventory, dry_run)
+    ec2.internet_gateways(account_inventory, dry_run)
+    ec2.vpc(account_inventory, dry_run) 
 
 main()

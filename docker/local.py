@@ -4,10 +4,16 @@ import re
 import sys
 
 
-def profiles(inventory):
+def profiles():
     log = logger.create_logger()
 
+    profiles = []
+
+    aws_dir = os.environ['HOME'] + '/.aws/'
     credentials_file = os.environ['HOME'] + '/.aws/credentials'
+
+    log.debug("Root dir contents: %s", os.listdir(os.environ['HOME']))
+    log.debug("Mounted .aws dir contents: %s", os.listdir(aws_dir))
 
     if os.path.exists(credentials_file):
         if not os.path.getsize(credentials_file) > 0:
@@ -22,14 +28,11 @@ def profiles(inventory):
     with open(credentials_file) as f:
         for line in f:
             if line.startswith("["):
-                profile = re.search(r"\[([A-Za-z0-9_]+)\]", line).group()
+                profile = re.search(r"\[([A-Za-z0-9\-\_]+)\]", line).group()
                 profile = profile[1:-1]
 
-                inventory[profile] = {}
-                inventory[profile]['ProfileName'] = profile
+                profiles.append(profile)
 
-    profile_names = []
-    for k, v in inventory.items():
-        profile_names.append(k)
+    log.debug("Profiles: %s", profiles)
 
-    log.info("Profiles: %s", profile_names)
+    return profiles

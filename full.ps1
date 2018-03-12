@@ -1,18 +1,17 @@
-Param([string]$input)
+Param([string]$loglevel="info")
 
-if ([string]::IsNullOrEmpty($input)) {
-    $log_level="INFO"
-} else {
-    $log_level=$input
-}
+echo "Log level set as $loglevel"
 
 $aws_default_region="us-west-2"
 
-$container_aws_dir="/root/.aws/"
-$container_ssh_dir="/root/.ssh/"
+$container_aws_dir="/root/.aws"
+$container_ssh_dir="/root/.ssh"
 
-$local_aws_dir="$home/.aws/"
-$local_ssh_dir="$home/.ssh/"
+$local_aws_dir="$home\.aws"
+$local_ssh_dir="$home\.ssh"
+
+echo "Contents of$local_aws_dir dir: $(Get-ChildItem $local_aws_dir)"
+echo "Contents of $local_aws_dir/credentials dir: $(Get-Content $local_aws_dir/credentials)"
 
 $container_name="default-vpc-killer"
 $image_name="default-vpc-killer"
@@ -22,8 +21,9 @@ docker build -t $image_name ./docker
 
 docker run -i -t --rm `
     --name $image_name `
+    -v "$local_aws_dir`:$container_aws_dir" `
+    -v "$local_ssh_dir`:$container_ssh_dir" `
     -e "AWS_DEFAULT_REGION=$aws_default_region" `
-    -e "log_level=$log_level" `
-    -v $local_aws_dir=$container_aws_dir `
-    -v $local_ssh_dir=$container_ssh_dir `
+    -e "dry_run=False" `
+    -e "log_level=$loglevel" `
     $image_name
