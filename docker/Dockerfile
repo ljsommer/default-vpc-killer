@@ -1,2 +1,2 @@
-FROM python-base
+FROM ljsommer/python-base
 CMD ["python", "/app/src/main.py"]
