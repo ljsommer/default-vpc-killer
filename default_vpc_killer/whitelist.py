@@ -1,7 +1,7 @@
-import logger
 from os import path
 from pathlib import Path
 import yaml
+import logger
 
 
 def decorate(inventory, regions):
@@ -30,7 +30,7 @@ def decorate(inventory, regions):
                 except KeyError as e:
                     log.warn(
                         "Profile identified in whitelist file that is not present in credentials file: %s",
-                        e.response['Error']['Body'] 
+                        e.response['Error']['Body']
                     )
 
         for whitelist_region in data_loaded[attribute['ProfileName']]:

@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
+import os
 import ec2
 import local
 import logger
-import os
 import sts
 import whitelist
 
@@ -44,6 +44,6 @@ def main():
 
     ec2.subnets(account_inventory, dry_run)
     ec2.internet_gateways(account_inventory, dry_run)
-    ec2.vpc(account_inventory, dry_run) 
+    ec2.vpc(account_inventory, dry_run)
 
 main()
