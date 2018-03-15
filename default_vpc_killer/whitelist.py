@@ -31,11 +31,13 @@ def decorate(inventory, regions):
                             if key == whitelist_region:
                                 value['Whitelist'] = "True"
 
-                except KeyError as error:
+                except KeyError:
+                    # TODO: Kill off this KeyError
+                    # And use safe nav instead
                     log.warning(
                         "Profile identified in whitelist file that"
                         " is not present in credentials file: %s",
-                        error.response['Error']['Body'])
+                        attribute['ProfileName'])
 
         for whitelist_region in data_loaded[attribute['ProfileName']]:
             if whitelist_region not in regions:
