@@ -131,7 +131,7 @@ def network_interfaces(inventory):
 def subnets(inventory, dry_run):
     log = logger.create_logger()
 
-    for account, attribute in inventory.items():
+    for _account, attribute in inventory.items():
         for region in attribute['Regions']:
             for key, value in region.items():
                 region_name = key
@@ -183,7 +183,7 @@ def subnets(inventory, dry_run):
 def security_groups(inventory, dry_run):
     log = logger.create_logger()
 
-    for account, attribute in inventory.items():
+    for _account, attribute in inventory.items():
         for region in attribute['Regions']:
             for key, value in region.items():
                 region_name = key
@@ -235,7 +235,7 @@ def security_groups(inventory, dry_run):
 def network_acls(inventory, dry_run):
     log = logger.create_logger()
 
-    for account, attribute in inventory.items():
+    for _account, attribute in inventory.items():
         for region in attribute['Regions']:
             for key, value in region.items():
                 region_name = key
@@ -263,7 +263,6 @@ def network_acls(inventory, dry_run):
                         )
 
                         for nacl in response['NetworkAcls']:
-                            nacl_dict = nacl
                             resource = nacl['NetworkAclId']
 
                             log.debug("Attempting to delete %s from %s - dry-run: %s", resource, vpc, dry_run)
@@ -287,7 +286,7 @@ def network_acls(inventory, dry_run):
 def internet_gateways(inventory, dry_run):
     log = logger.create_logger()
 
-    for account, attribute in inventory.items():
+    for _account, attribute in inventory.items():
         for region in attribute['Regions']:
             for key, value in region.items():
                 region_name = key
@@ -315,7 +314,6 @@ def internet_gateways(inventory, dry_run):
                         )
 
                         for igw in response['InternetGateways']:
-                            igw_dict = igw
                             resource = igw['InternetGatewayId']
 
                             response = ec2_client.detach_internet_gateway(
@@ -345,7 +343,7 @@ def internet_gateways(inventory, dry_run):
 def route_tables(inventory, dry_run):
     log = logger.create_logger()
 
-    for account, attribute in inventory.items():
+    for _account, attribute in inventory.items():
         for region in attribute['Regions']:
             for key, value in region.items():
                 region_name = key
@@ -420,7 +418,7 @@ def vpc(inventory, dry_run):
                         ec2_client = session.client('ec2')
 
                         log.debug("Attempting to delete %s - dry-run: %s", vpc, dry_run)
-                        response = ec2_client.delete_vpc(
+                        ec2_client.delete_vpc(
                             VpcId=vpc,
                             DryRun=dry_run
                         )

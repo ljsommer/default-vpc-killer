@@ -7,7 +7,7 @@ import logger
 def decorate(inventory, regions):
     log = logger.create_logger()
 
-    pwd, filename = path.split(path.abspath(__file__))
+    pwd, _filename = path.split(path.abspath(__file__))
     config = path.join(pwd, 'whitelist.yml')
 
     if path.isfile(config):
@@ -19,7 +19,7 @@ def decorate(inventory, regions):
                 data_loaded
             )
 
-        for account, attribute in inventory.items():
+        for _account, attribute in inventory.items():
             for region in attribute['Regions']:
                 try:
                     for whitelist_region in data_loaded[attribute['ProfileName']]:
