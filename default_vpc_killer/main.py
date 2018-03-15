@@ -19,7 +19,7 @@ def main():
         """Convert string to boolean"""
         if string == 'True':
             return True
-        elif string == 'False':
+        else:
             return False
 
     dry_run = str_to_bool(dry_run)
