@@ -142,7 +142,8 @@ def network_interfaces(inventory):
                                 profile)
 
                         else:
-                            log.warning("Unhandled exception occurred: %s", error)
+                            log.warning(
+                                "Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -196,11 +197,11 @@ def subnets(inventory, dry_run):
                             log.warning(
                                 "The keypair associated with profile %s"
                                 " is not currently able to authenticate against"
-                                " AWS EC2. Please investigate, remove and rerun.",
-                                profile)
+                                " AWS EC2. Please investigate, remove and rerun.", profile)
 
                         else:
-                            log.warning("Unhandled exception occurred: %s", error)
+                            log.warning(
+                                "Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -254,11 +255,11 @@ def security_groups(inventory, dry_run):
                             log.warning(
                                 "The keypair associated with profile %s"
                                 " is not currently able to authenticate against"
-                                " AWS EC2. Please investigate or remove and rerun.",
-                                profile)
+                                " AWS EC2. Please investigate or remove and rerun.", profile)
 
                         else:
-                            log.warning("Unhandled exception occurred: %s", error)
+                            log.warning(
+                                "Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -311,11 +312,11 @@ def network_acls(inventory, dry_run):
                             log.warning(
                                 "The keypair associated with profile %s"
                                 " is not currently able to authenticate against"
-                                " AWS EC2. Please investigate or remove and rerun.",
-                                profile)
+                                " AWS EC2. Please investigate or remove and rerun.", profile)
 
                         else:
-                            log.warning("Unhandled exception occurred: %s", error)
+                            log.warning(
+                                "Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -374,11 +375,11 @@ def internet_gateways(inventory, dry_run):
                             log.warning(
                                 "The keypair associated with profile %s"
                                 " is not currently able to authenticate against"
-                                " AWS EC2. Please investigate or remove and rerun.",
-                                profile)
+                                " AWS EC2. Please investigate or remove and rerun.", profile)
 
                         else:
-                            log.warning("Unhandled exception occurred: %s", error)
+                            log.warning(
+                                "Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -432,11 +433,11 @@ def route_tables(inventory, dry_run):
                             log.warning(
                                 "The keypair associated with profile %s"
                                 " is not currently able to authenticate against"
-                                " AWS EC2. Please investigate or remove and rerun.",
-                                profile)
+                                " AWS EC2. Please investigate or remove and rerun.", profile)
 
                         else:
-                            log.warning("Unhandled exception occurred: %s", error)
+                            log.warning(
+                                "Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -478,11 +479,11 @@ def process_vpcs(inventory, dry_run):
                             log.warning(
                                 "The keypair associated with profile %s"
                                 " is not currently able to authenticate against"
-                                " AWS EC2. Please investigate or remove and rerun.",
-                                profile)
+                                " AWS EC2. Please investigate or remove and rerun.", profile)
 
                         else:
-                            log.warning("Unhandled exception occurred: %s", error)
+                            log.warning(
+                                "Unhandled exception occurred: %s", error)
                             vpcs_removed.append(vpc)
                             continue
 
