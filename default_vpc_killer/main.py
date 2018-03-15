@@ -17,10 +17,7 @@ def main():
 
     def str_to_bool(string):
         """Convert string to boolean"""
-        if string == 'True':
-            return True
-        else:
-            return False
+        return bool(string == 'True')
 
     dry_run = str_to_bool(dry_run)
 
