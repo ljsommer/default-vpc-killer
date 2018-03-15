@@ -42,7 +42,7 @@ def main():
     regions = ec2.describe_regions(profiles)
 
     # Account inventory assembly begins
-    sts.account_id(account_inventory, profiles)
+    sts.fetch_account_ids(account_inventory, profiles)
     ec2.describe_default_vpcs(account_inventory, regions)
     whitelist.decorate(account_inventory, regions)
 
