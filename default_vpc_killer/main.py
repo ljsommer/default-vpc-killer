@@ -27,7 +27,7 @@ def main():
 
     account_inventory = {}
 
-    profiles = local.profiles()
+    profiles = local.fetch_profiles()
     regions = ec2.describe_regions(profiles)
 
     # Account inventory assembly begins

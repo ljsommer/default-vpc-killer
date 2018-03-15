@@ -5,7 +5,7 @@ import sys
 import logger
 
 
-def profiles():
+def fetch_profiles():
     """Iterate through local AWS credentials file"""
     log = logger.create_logger()
 
