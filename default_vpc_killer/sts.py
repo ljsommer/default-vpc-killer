@@ -4,7 +4,7 @@ from botocore.exceptions import ClientError
 import logger
 
 
-def account_id(inventory, profiles):
+def fetch_account_ids(inventory, profiles):
     """Iterate through AWS profiles and find associated account IDs"""
     log = logger.create_logger()
     region = 'us-west-2'
