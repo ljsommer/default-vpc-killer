@@ -441,4 +441,3 @@ def vpc(inventory, dry_run):
         summary.append(account_summary)
 
     log.info("Summary: %s", summary)
-

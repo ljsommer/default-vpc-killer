@@ -41,10 +41,3 @@ def decorate(inventory, regions):
                 )
     else:
         log.debug("No whitelist configuration file found at path %s", path.abspath(config))
-
-
-
-
-
-
-
