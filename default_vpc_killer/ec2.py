@@ -31,11 +31,11 @@ def describe_default_vpcs(inventory, regions):
 
             except ClientError as error:
                 if error.response['Error']['Code'] == 'InvalidClientTokenId':
-                    log.warn("""The keypair associated with profile %s
+                    log.warning("""The keypair associated with profile %s
                         is not currently able to authenticate against AWS EC2.
                         Please investigate or remove and rerun.""", profile)
                 else:
-                    log.warn("Unhandled exception occurred: %s", error)
+                    log.warning("Unhandled exception occurred: %s", error)
                     continue
 
             for vpc in response['Vpcs']:
@@ -63,11 +63,11 @@ def describe_regions(profiles):
 
         except ClientError as error:
             if error.response['Error']['Code'] == 'InvalidClientTokenId':
-                log.warn("""The keypair associated with profile %s
+                log.warning("""The keypair associated with profile %s
                     is not currently able to authenticate against AWS EC2.
                     Please investigate or remove and rerun.""", profile)
             else:
-                log.warn("Unhandled exception occurred: %s", error)
+                log.warning("Unhandled exception occurred: %s", error)
 
         regions = []
         for region in response['Regions']:
@@ -119,7 +119,7 @@ def network_interfaces(inventory):
                                 vpc)
 
                         else:
-                            log.warn(
+                            log.warning(
                                 "Account ID %s associated with keypair name %s: Network interfaces found in %s. No action will be taken on this VPC.",
                                 account,
                                 attribute['ProfileName'],
@@ -132,12 +132,12 @@ def network_interfaces(inventory):
 
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
-                            log.warn(
+                            log.warning(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", error)
+                            log.warning("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -188,12 +188,12 @@ def subnets(inventory, dry_run):
 
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
-                            log.warn(
+                            log.warning(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", error)
+                            log.warning("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -244,12 +244,12 @@ def security_groups(inventory, dry_run):
 
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
-                            log.warn(
+                            log.warning(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", error)
+                            log.warning("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -299,12 +299,12 @@ def network_acls(inventory, dry_run):
 
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
-                            log.warn(
+                            log.warning(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", error)
+                            log.warning("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -360,12 +360,12 @@ def internet_gateways(inventory, dry_run):
 
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
-                            log.warn(
+                            log.warning(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", error)
+                            log.warning("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -416,12 +416,12 @@ def route_tables(inventory, dry_run):
 
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
-                            log.warn(
+                            log.warning(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", error)
+                            log.warning("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -460,12 +460,12 @@ def vpc(inventory, dry_run):
 
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
-                            log.warn(
+                            log.warning(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", error)
+                            log.warning("Unhandled exception occurred: %s", error)
                             vpcs_removed.append(vpc)
                             continue
 

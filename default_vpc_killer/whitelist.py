@@ -31,14 +31,14 @@ def decorate(inventory, regions):
                                 value['Whitelist'] = "True"
 
                 except KeyError as error:
-                    log.warn(
+                    log.warning(
                         "Profile identified in whitelist file that is not present in credentials file: %s",
                         error.response['Error']['Body'])
 
         for whitelist_region in data_loaded[attribute['ProfileName']]:
             if whitelist_region not in regions:
 
-                log.warn(
+                log.warning(
                     "Region identified in whitelist file that was not listed by AWS API call: %s",
                     whitelist_region)
     else:
