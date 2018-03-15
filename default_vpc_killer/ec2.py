@@ -1,9 +1,11 @@
+"""Search and destroy methods for VPC resources"""
 import boto3
 from botocore.exceptions import ClientError
 import logger
 
 
 def describe_default_vpcs(inventory, regions):
+    """Find default VPCs"""
     log = logger.create_logger()
 
     for account in inventory:
@@ -45,6 +47,7 @@ def describe_default_vpcs(inventory, regions):
 
 
 def describe_regions(profiles):
+    """Find regions available to AWS profiles"""
     log = logger.create_logger()
 
     for profile in profiles:
@@ -78,6 +81,7 @@ def describe_regions(profiles):
 
 
 def network_interfaces(inventory):
+    """Find network interfaces"""
     log = logger.create_logger()
 
     for account, attribute in inventory.items():
@@ -138,6 +142,7 @@ def network_interfaces(inventory):
 
 
 def subnets(inventory, dry_run):
+    """Find and delete subnets"""
     log = logger.create_logger()
 
     for _account, attribute in inventory.items():
@@ -193,6 +198,7 @@ def subnets(inventory, dry_run):
 
 
 def security_groups(inventory, dry_run):
+    """Find and delete security groups"""
     log = logger.create_logger()
 
     for _account, attribute in inventory.items():
@@ -248,6 +254,7 @@ def security_groups(inventory, dry_run):
 
 
 def network_acls(inventory, dry_run):
+    """Find and delete network ACLs"""
     log = logger.create_logger()
 
     for _account, attribute in inventory.items():
@@ -302,6 +309,7 @@ def network_acls(inventory, dry_run):
 
 
 def internet_gateways(inventory, dry_run):
+    """Find, detach, and delete internet gateways"""
     log = logger.create_logger()
 
     for _account, attribute in inventory.items():
@@ -362,6 +370,7 @@ def internet_gateways(inventory, dry_run):
 
 
 def route_tables(inventory, dry_run):
+    """Find and delete route tables"""
     log = logger.create_logger()
 
     for _account, attribute in inventory.items():
@@ -417,6 +426,7 @@ def route_tables(inventory, dry_run):
 
 
 def vpc(inventory, dry_run):
+    """Find and delete VPCs"""
     log = logger.create_logger()
 
     summary = []

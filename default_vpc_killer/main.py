@@ -1,5 +1,7 @@
 #!/usr/bin/python
-
+"""
+Delete all unused default VPCs in AWS accounts
+"""
 import os
 import ec2
 import local
@@ -9,16 +11,20 @@ import whitelist
 
 '''
 Development:
-    Add identification of available regions to profile; don't assume that all profiles have EC2 access to all regions
+    Add identification of available regions to profile;
+    don't assume that all profiles have EC2 access to all regions
+
     Make this pep8 compliant - 80 characters....yeesh
 '''
 
 
 def main():
+    """Main entry point"""
     log = logger.create_logger()
     dry_run = os.environ['dry_run']
 
     def str_to_bool(string):
+        """Convert string to boolean"""
         if string == 'True':
             return True
         elif string == 'False':

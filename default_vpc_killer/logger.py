@@ -1,9 +1,11 @@
+"""Configure logging settings"""
 import logging
 import os
 import sys
 
 
 def create_logger():
+    """Build a logger"""
     logging.getLogger('boto3').setLevel(logging.CRITICAL)
     logging.getLogger('botocore').setLevel(logging.CRITICAL)
 

@@ -1,9 +1,14 @@
+"""
+Loads whitelist configuration
+"""
+
 from os import path
 import yaml
 import logger
 
 
 def decorate(inventory, regions):
+    """Add whitelist flag to whitelisted resources"""
     log = logger.create_logger()
 
     pwd, _filename = path.split(path.abspath(__file__))

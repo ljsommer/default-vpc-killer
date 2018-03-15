@@ -1,3 +1,4 @@
+"""Fetch available AWS profiles"""
 import os
 import re
 import sys
@@ -5,6 +6,7 @@ import logger
 
 
 def profiles():
+    """Iterate through local AWS credentials file"""
     log = logger.create_logger()
 
     profiles = []
