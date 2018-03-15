@@ -9,14 +9,6 @@ import logger
 import sts
 import whitelist
 
-'''
-Development:
-    Add identification of available regions to profile;
-    don't assume that all profiles have EC2 access to all regions
-
-    Make this pep8 compliant - 80 characters....yeesh
-'''
-
 
 def main():
     """Main entry point"""
