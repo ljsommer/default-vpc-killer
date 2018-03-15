@@ -22,14 +22,14 @@ def decorate(inventory, regions):
             for region in attribute['Regions']:
                 try:
                     for whitelist_region in data_loaded[attribute['ProfileName']]:
-                        for k, v in region.items():
-                            if k == whitelist_region:
-                                v['Whitelist'] = "True"
+                        for key, value in region.items():
+                            if key == whitelist_region:
+                                value['Whitelist'] = "True"
 
-                except KeyError as e:
+                except KeyError as error:
                     log.warn(
                         "Profile identified in whitelist file that is not present in credentials file: %s",
-                        e.response['Error']['Body']
+                        error.response['Error']['Body']
                     )
 
         for whitelist_region in data_loaded[attribute['ProfileName']]:

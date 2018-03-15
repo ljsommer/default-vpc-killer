@@ -25,8 +25,8 @@ def profiles():
 
     log.debug("Credentials file identified as %s", credentials_file)
 
-    with open(credentials_file) as f:
-        for line in f:
+    with open(credentials_file) as file:
+        for line in file:
             if line.startswith("["):
                 profile = re.search(r"\[([A-Za-z0-9\-\_]+)\]", line).group()
                 profile = profile[1:-1]

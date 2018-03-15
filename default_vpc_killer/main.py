@@ -18,10 +18,10 @@ def main():
     log = logger.create_logger()
     dry_run = os.environ['dry_run']
 
-    def str_to_bool(s):
-        if s == 'True':
+    def str_to_bool(string):
+        if string == 'True':
              return True
-        elif s == 'False':
+        elif string == 'False':
              return False
 
     dry_run = str_to_bool(dry_run)

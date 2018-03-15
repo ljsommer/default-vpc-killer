@@ -25,13 +25,13 @@ def describe_default_vpcs(inventory, regions):
                     ]
                 )
 
-            except ClientError as e:
-                if e.response['Error']['Code'] == 'InvalidClientTokenId':
+            except ClientError as error:
+                if error.response['Error']['Code'] == 'InvalidClientTokenId':
                     log.warn("""The keypair associated with profile %s
                         is not currently able to authenticate against AWS EC2.
                         Please investigate or remove and rerun.""", profile)
                 else:
-                    log.warn("Unhandled exception occurred: %s", e)
+                    log.warn("Unhandled exception occurred: %s", error)
                     continue
 
             for vpc in response['Vpcs']:
@@ -51,19 +51,19 @@ def describe_regions(profiles):
         try:
             response = ec2.describe_regions()
 
-        except ClientError as e:
-            if e.response['Error']['Code'] == 'InvalidClientTokenId':
+        except ClientError as error:
+            if error.response['Error']['Code'] == 'InvalidClientTokenId':
                 log.warn("""The keypair associated with profile %s
                     is not currently able to authenticate against AWS EC2.
                     Please investigate or remove and rerun.""", profile)
             else:
-                log.warn("Unhandled exception occurred: %s", e)
+                log.warn("Unhandled exception occurred: %s", error)
 
         regions = []
         for region in response['Regions']:
-            for k, v in region.items():
-                if k == "RegionName":
-                    regions.append(v)
+            for key, value in region.items():
+                if key == "RegionName":
+                    regions.append(value)
 
     log.debug("Regions identified: %s", regions)
 
@@ -116,15 +116,15 @@ def network_interfaces(inventory):
                                 vpc.update((v, "True") for k, v in vpc.items() if k == 'NetworkInterfaces')
                             continue
 
-                    except ClientError as e:
-                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                    except ClientError as error:
+                        if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warn(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile
                             )
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", e)
+                            log.warn("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -168,15 +168,15 @@ def subnets(inventory, dry_run):
                                 DryRun=dry_run
                             )
 
-                    except ClientError as e:
-                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                    except ClientError as error:
+                        if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warn(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile
                             )
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", e)
+                            log.warn("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -220,15 +220,15 @@ def security_groups(inventory, dry_run):
                                 DryRun=dry_run
                             )
 
-                    except ClientError as e:
-                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                    except ClientError as error:
+                        if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warn(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile
                             )
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", e)
+                            log.warn("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -271,15 +271,15 @@ def network_acls(inventory, dry_run):
                                 DryRun=dry_run
                             )
 
-                    except ClientError as e:
-                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                    except ClientError as error:
+                        if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warn(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile
                             )
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", e)
+                            log.warn("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -328,15 +328,15 @@ def internet_gateways(inventory, dry_run):
                                 DryRun=dry_run
                             )
 
-                    except ClientError as e:
-                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                    except ClientError as error:
+                        if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warn(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile
                             )
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", e)
+                            log.warn("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -380,15 +380,15 @@ def route_tables(inventory, dry_run):
                                 DryRun=dry_run
                             )
 
-                    except ClientError as e:
-                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                    except ClientError as error:
+                        if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warn(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile
                             )
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", e)
+                            log.warn("Unhandled exception occurred: %s", error)
                             continue
 
 
@@ -423,15 +423,15 @@ def vpc(inventory, dry_run):
                             DryRun=dry_run
                         )
 
-                    except ClientError as e:
-                        if e.response['Error']['Code'] == 'InvalidClientTokenId':
+                    except ClientError as error:
+                        if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warn(
                                 "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
                                 profile
                             )
 
                         else:
-                            log.warn("Unhandled exception occurred: %s", e)
+                            log.warn("Unhandled exception occurred: %s", error)
                             vpcs_removed.append(vpc)
                             continue
 

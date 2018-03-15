@@ -20,11 +20,11 @@ def account_id(inventory, profiles):
             inventory[account_id] = {}
             inventory[account_id]['ProfileName'] = profile
 
-        except ClientError as e:
-            if e.response['Error']['Code'] == 'InvalidClientTokenId':
+        except ClientError as error:
+            if error.response['Error']['Code'] == 'InvalidClientTokenId':
                 log.warn("""The keypair associated with profile %s
                     is not currently able to authenticate against AWS STS.
                     Please investigate or remove and rerun.""", profile)
             else:
-                log.warn("Unhandled exception occurred: %s", e)
+                log.warn("Unhandled exception occurred: %s", error)
                 continue
