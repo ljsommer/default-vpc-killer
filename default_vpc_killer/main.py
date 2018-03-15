@@ -20,9 +20,9 @@ def main():
 
     def str_to_bool(string):
         if string == 'True':
-             return True
+            return True
         elif string == 'False':
-             return False
+            return False
 
     dry_run = str_to_bool(dry_run)
 
@@ -45,5 +45,6 @@ def main():
     ec2.subnets(account_inventory, dry_run)
     ec2.internet_gateways(account_inventory, dry_run)
     ec2.vpc(account_inventory, dry_run)
+
 
 main()
