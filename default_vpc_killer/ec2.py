@@ -113,14 +113,17 @@ def network_interfaces(inventory):
 
                         if not response['NetworkInterfaces']:
                             log.debug(
-                                "Account ID %s associated with keypair name %s: No network interfaces present in %s",
+                                "Account ID %s associated with keypair name"
+                                " %s: No network interfaces present in %s",
                                 account,
                                 attribute['ProfileName'],
                                 vpc)
 
                         else:
                             log.warning(
-                                "Account ID %s associated with keypair name %s: Network interfaces found in %s. No action will be taken on this VPC.",
+                                "Account ID %s associated with keypair name"
+                                " %s: Network interfaces found in %s. "
+                                "No action will be taken on this VPC.",
                                 account,
                                 attribute['ProfileName'],
                                 vpc)
@@ -133,7 +136,9 @@ def network_interfaces(inventory):
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warning(
-                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                "The keypair associated with profile %s is not"
+                                " currently able to authenticate against AWS"
+                                " EC2. Please investigate, remove and rerun.",
                                 profile)
 
                         else:
@@ -189,7 +194,9 @@ def subnets(inventory, dry_run):
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warning(
-                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                "The keypair associated with profile %s"
+                                " is not currently able to authenticate against"
+                                " AWS EC2. Please investigate, remove and rerun.",
                                 profile)
 
                         else:
@@ -245,7 +252,9 @@ def security_groups(inventory, dry_run):
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warning(
-                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                "The keypair associated with profile %s"
+                                " is not currently able to authenticate against"
+                                " AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
@@ -300,7 +309,9 @@ def network_acls(inventory, dry_run):
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warning(
-                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                "The keypair associated with profile %s"
+                                " is not currently able to authenticate against"
+                                " AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
@@ -361,7 +372,9 @@ def internet_gateways(inventory, dry_run):
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warning(
-                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                "The keypair associated with profile %s"
+                                " is not currently able to authenticate against"
+                                " AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
@@ -417,7 +430,9 @@ def route_tables(inventory, dry_run):
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warning(
-                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                "The keypair associated with profile %s"
+                                " is not currently able to authenticate against"
+                                " AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
@@ -461,7 +476,9 @@ def vpc(inventory, dry_run):
                     except ClientError as error:
                         if error.response['Error']['Code'] == 'InvalidClientTokenId':
                             log.warning(
-                                "The keypair associated with profile %s is not currently able to authenticate against AWS EC2. Please investigate or remove and rerun.",
+                                "The keypair associated with profile %s"
+                                " is not currently able to authenticate against"
+                                " AWS EC2. Please investigate or remove and rerun.",
                                 profile)
 
                         else:
