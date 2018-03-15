@@ -13,7 +13,7 @@ def create_logger():
     numeric_level = getattr(logging, log_level.upper(), None)
 
     if not isinstance(numeric_level, int):
-        raise ValueError('Invalid log level: %s', log_level)
+        raise ValueError("Invalid log level: %s" % log_level)
 
     logging.basicConfig(
         stream=sys.stdout,
