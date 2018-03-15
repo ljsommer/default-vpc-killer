@@ -19,7 +19,8 @@ def decorate(inventory, regions):
         with open(config, 'r') as stream:
             data_loaded = yaml.load(stream)
             log.debug(
-                "Whitelist config file contents: %s - no further processing will occur on these items.",
+                "Whitelist config file contents: %s "
+                "- no further processing will occur on these items.",
                 data_loaded)
 
         for _account, attribute in inventory.items():
@@ -32,7 +33,8 @@ def decorate(inventory, regions):
 
                 except KeyError as error:
                     log.warning(
-                        "Profile identified in whitelist file that is not present in credentials file: %s",
+                        "Profile identified in whitelist file that"
+                        " is not present in credentials file: %s",
                         error.response['Error']['Body'])
 
         for whitelist_region in data_loaded[attribute['ProfileName']]:
