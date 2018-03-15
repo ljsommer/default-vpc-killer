@@ -440,7 +440,7 @@ def route_tables(inventory, dry_run):
                             continue
 
 
-def vpc(inventory, dry_run):
+def process_vpcs(inventory, dry_run):
     """Find and delete VPCs"""
     log = logger.create_logger()
 

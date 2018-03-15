@@ -39,7 +39,7 @@ def main():
 
     ec2.subnets(account_inventory, dry_run)
     ec2.internet_gateways(account_inventory, dry_run)
-    ec2.vpc(account_inventory, dry_run)
+    ec2.process_vpcs(account_inventory, dry_run)
 
 
 main()
