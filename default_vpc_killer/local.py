@@ -1,10 +1,12 @@
-import logger
+"""Fetch available AWS profiles"""
 import os
 import re
 import sys
+import logger
 
 
-def profiles():
+def fetch_profiles():
+    """Iterate through local AWS credentials file"""
     log = logger.create_logger()
 
     profiles = []
@@ -25,8 +27,8 @@ def profiles():
 
     log.debug("Credentials file identified as %s", credentials_file)
 
-    with open(credentials_file) as f:
-        for line in f:
+    with open(credentials_file) as file:
+        for line in file:
             if line.startswith("["):
                 profile = re.search(r"\[([A-Za-z0-9\-\_]+)\]", line).group()
                 profile = profile[1:-1]

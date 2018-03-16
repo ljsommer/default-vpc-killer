@@ -1,28 +1,23 @@
 #!/usr/bin/python
-
+"""
+Delete all unused default VPCs in AWS accounts
+"""
+import os
 import ec2
 import local
 import logger
-import os
 import sts
 import whitelist
 
-'''
-Development:
-    Add identification of available regions to profile; don't assume that all profiles have EC2 access to all regions
-    Make this pep8 compliant - 80 characters....yeesh
-'''
-
 
 def main():
+    """Main entry point"""
     log = logger.create_logger()
     dry_run = os.environ['dry_run']
 
-    def str_to_bool(s):
-        if s == 'True':
-             return True
-        elif s == 'False':
-             return False
+    def str_to_bool(string):
+        """Convert string to boolean"""
+        return bool(string == 'True')
 
     dry_run = str_to_bool(dry_run)
 
@@ -32,11 +27,11 @@ def main():
 
     account_inventory = {}
 
-    profiles = local.profiles()
+    profiles = local.fetch_profiles()
     regions = ec2.describe_regions(profiles)
 
     # Account inventory assembly begins
-    sts.account_id(account_inventory, profiles)
+    sts.fetch_account_ids(account_inventory, profiles)
     ec2.describe_default_vpcs(account_inventory, regions)
     whitelist.decorate(account_inventory, regions)
 
@@ -44,6 +39,7 @@ def main():
 
     ec2.subnets(account_inventory, dry_run)
     ec2.internet_gateways(account_inventory, dry_run)
-    ec2.vpc(account_inventory, dry_run) 
+    ec2.process_vpcs(account_inventory, dry_run)
+
 
 main()

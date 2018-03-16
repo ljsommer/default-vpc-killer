@@ -17,7 +17,7 @@ $container_name="default-vpc-killer"
 $image_name="default-vpc-killer"
 
 echo "Building Docker image: $image_name"
-docker build -t $image_name ./docker
+docker build -t $image_name .
 
 docker run -i -t --rm `
     --name $image_name `
